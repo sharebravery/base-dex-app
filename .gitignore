@@ -1,0 +1,8 @@
+# macOS
+.DS_Store
+
+# Node (apps/api) — package-lock.json IS committed per project constraints
+node_modules/
+
+# SDD working artifacts (self-ignoring, but kept here for clarity)
+.superpowers/sdd/
