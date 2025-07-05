@@ -1,0 +1,11 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "dex-api",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-07-15",
+  "compatibility_flags": ["nodejs_compat"],
+  "vars": {
+    "APP_ENV": "mock",
+    "MARKET_API_BASE_URL": "https://api.coingecko.com/api/v3"
+  }
+}
