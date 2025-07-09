@@ -1,0 +1,10 @@
+{
+  "@@locale": "zh",
+  "market": "市场",
+  "trade": "交易",
+  "portfolio": "资产",
+  "settings": "设置",
+  "marketPlaceholder": "市场概览",
+  "tradePlaceholder": "ETH / USDC 兑换",
+  "portfolioPlaceholder": "资产概览"
+}

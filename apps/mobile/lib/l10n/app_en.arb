@@ -1,0 +1,10 @@
+{
+  "@@locale": "en",
+  "market": "Market",
+  "trade": "Trade",
+  "portfolio": "Portfolio",
+  "settings": "Settings",
+  "marketPlaceholder": "Market overview",
+  "tradePlaceholder": "ETH / USDC Swap",
+  "portfolioPlaceholder": "Portfolio overview"
+}
