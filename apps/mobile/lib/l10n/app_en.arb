@@ -6,5 +6,9 @@
   "settings": "Settings",
   "marketPlaceholder": "Market overview",
   "tradePlaceholder": "ETH / USDC Swap",
-  "portfolioPlaceholder": "Portfolio overview"
+  "portfolioPlaceholder": "Portfolio overview",
+  "tradable": "Tradable",
+  "marketDataOnly": "Market data only",
+  "swap": "Swap",
+  "chart": "Chart"
 }

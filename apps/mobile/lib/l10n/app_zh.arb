@@ -6,5 +6,9 @@
   "settings": "设置",
   "marketPlaceholder": "市场概览",
   "tradePlaceholder": "ETH / USDC 兑换",
-  "portfolioPlaceholder": "资产概览"
+  "portfolioPlaceholder": "资产概览",
+  "tradable": "可交易",
+  "marketDataOnly": "仅行情",
+  "swap": "Swap",
+  "chart": "图表"
 }
