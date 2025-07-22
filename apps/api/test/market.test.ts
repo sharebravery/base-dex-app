@@ -20,7 +20,7 @@ describe('market routes', () => {
 
     const response = await app.request('/v1/markets', {}, {
       APP_ENV: 'mock',
-      MARKET_API_BASE_URL: 'https://example.test',
+      MARKET_API_BASE_URL: 'https://example.test/api/v3',
     });
     expect(response.status).toBe(200);
     expect(await response.json()).toEqual({
@@ -34,5 +34,11 @@ describe('market routes', () => {
         tradable: true
       }]
     });
+    expect(fetch).toHaveBeenCalledWith(
+      expect.objectContaining({
+        href: expect.stringContaining('/api/v3/coins/markets'),
+      }),
+      expect.anything(),
+    );
   });
 });

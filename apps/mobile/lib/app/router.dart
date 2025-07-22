@@ -1,5 +1,7 @@
 import 'package:dex_app/app/app_shell.dart';
+import 'package:dex_app/features/market/market_models.dart';
 import 'package:dex_app/features/market/market_screen.dart';
+import 'package:dex_app/features/market/pair_detail_screen.dart';
 import 'package:dex_app/l10n/l10n_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -20,6 +22,18 @@ final appRouter = GoRouter(
             GoRoute(
               path: '/market',
               builder: (context, state) => const MarketScreen(),
+              routes: [
+                GoRoute(
+                  path: ':assetId',
+                  builder: (context, state) {
+                    final assetId = state.pathParameters['assetId']!;
+                    final asset = MarketAsset.fixtures.firstWhere(
+                      (asset) => asset.id == assetId,
+                    );
+                    return PairDetailScreen(asset: asset);
+                  },
+                ),
+              ],
             ),
           ],
         ),

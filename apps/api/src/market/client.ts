@@ -12,7 +12,7 @@ const catalog = new Map([
 
 export async function getMarkets(env: Bindings) {
   const ids = [...catalog.keys()].join(',');
-  const url = new URL('/coins/markets', env.MARKET_API_BASE_URL);
+  const url = new URL(`${env.MARKET_API_BASE_URL}/coins/markets`);
   url.searchParams.set('vs_currency', 'usd');
   url.searchParams.set('ids', ids);
   url.searchParams.set('price_change_percentage', '24h');
