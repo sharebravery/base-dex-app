@@ -21,14 +21,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: npm
-          cache-dependency-path: apps/api/package-lock.json
-      - run: npm ci
+          cache: pnpm
+          cache-dependency-path: apps/api/pnpm-lock.yaml
+      - run: pnpm install --frozen-lockfile
         working-directory: apps/api
-      - run: npm run typecheck
+      - run: pnpm run typecheck
         working-directory: apps/api
-      - run: npm test
+      - run: pnpm test
         working-directory: apps/api

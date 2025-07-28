@@ -1,8 +1,11 @@
 # macOS
 .DS_Store
 
-# Node (apps/api) — package-lock.json IS committed per project constraints
+# Node (apps/api) - pnpm-lock.yaml IS committed per project constraints
 node_modules/
+
+# Planning docs are local-only, not tracked in git
+doc/
 
 # SDD working artifacts (self-ignoring, but kept here for clarity)
 .superpowers/sdd/
