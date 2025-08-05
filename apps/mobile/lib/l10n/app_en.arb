@@ -10,5 +10,10 @@
   "tradable": "Tradable",
   "marketDataOnly": "Market data only",
   "swap": "Swap",
-  "chart": "Chart"
+  "chart": "Chart",
+  "signInTitle": "Trade on-chain",
+  "walletRecoverable": "Your embedded wallet is recoverable through your login.",
+  "continueWithApple": "Continue with Apple",
+  "continueWithGoogle": "Continue with Google",
+  "continueWithEmail": "Continue with email"
 }

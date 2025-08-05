@@ -10,5 +10,10 @@
   "tradable": "可交易",
   "marketDataOnly": "仅行情",
   "swap": "Swap",
-  "chart": "图表"
+  "chart": "图表",
+  "signInTitle": "链上交易",
+  "walletRecoverable": "你的嵌入式钱包可通过登录恢复。",
+  "continueWithApple": "继续使用 Apple",
+  "continueWithGoogle": "继续使用 Google",
+  "continueWithEmail": "继续使用邮箱"
 }
