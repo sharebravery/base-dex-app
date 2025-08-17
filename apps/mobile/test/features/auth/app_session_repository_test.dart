@@ -57,7 +57,7 @@ void main() {
     final adapter = DioAdapter(dio: dio);
 
     const walletAddress = '0x1111111111111111111111111111111111111111';
-    const nonce = 'test-nonce-123';
+    const nonce = 'testnonce123';
     const domain = 'example.test';
     const uri = 'https://example.test/login';
 
