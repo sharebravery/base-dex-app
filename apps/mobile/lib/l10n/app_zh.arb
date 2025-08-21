@@ -15,5 +15,12 @@
   "walletRecoverable": "你的嵌入式钱包可通过登录恢复。",
   "continueWithApple": "继续使用 Apple",
   "continueWithGoogle": "继续使用 Google",
-  "continueWithEmail": "继续使用邮箱"
+  "continueWithEmail": "继续使用邮箱",
+  "usdcBaseUnits": "USDC 基本单位",
+  "loadingPrice": "价格加载中…",
+  "enterAmount": "输入金额",
+  "indicative": "指示价格",
+  "review": "查看",
+  "confirmSwap": "确认兑换",
+  "loadingQuote": "报价加载中…"
 }

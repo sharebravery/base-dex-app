@@ -15,5 +15,12 @@
   "walletRecoverable": "Your embedded wallet is recoverable through your login.",
   "continueWithApple": "Continue with Apple",
   "continueWithGoogle": "Continue with Google",
-  "continueWithEmail": "Continue with email"
+  "continueWithEmail": "Continue with email",
+  "usdcBaseUnits": "USDC base units",
+  "loadingPrice": "Loading Price…",
+  "enterAmount": "Enter amount",
+  "indicative": "Indicative",
+  "review": "Review",
+  "confirmSwap": "Confirm Swap",
+  "loadingQuote": "Loading Quote…"
 }
