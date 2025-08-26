@@ -54,6 +54,7 @@ dependencies:
   http: ^1.6.0
   wallet: ^0.0.18
   flutter_secure_storage: ^10.3.1
+  local_auth: ^3.0.2
 
 dev_dependencies:
   flutter_test:

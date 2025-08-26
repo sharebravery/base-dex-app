@@ -22,5 +22,28 @@
   "indicative": "Indicative",
   "review": "Review",
   "confirmSwap": "Confirm Swap",
-  "loadingQuote": "Loading Quote…"
+  "loadingQuote": "Loading Quote…",
+  "pay": "Pay",
+  "receive": "Receive",
+  "minimumReceived": "Minimum Received",
+  "networkFee": "Network Fee",
+  "slippage": "Slippage",
+  "route": "Route",
+  "spender": "Spender",
+  "chain": "Chain",
+  "destination": "Destination",
+  "baseChain": "Base",
+  "approveToken": "Approve {symbol}",
+  "@approveToken": {
+    "placeholders": {
+      "symbol": {"type": "String"}
+    }
+  },
+  "confirm": "Confirm",
+  "authenticating": "Authenticating…",
+  "approving": "Approving…",
+  "swapping": "Swapping…",
+  "transactionSubmitted": "Transaction submitted",
+  "transactionConfirmed": "Transaction confirmed",
+  "transactionFailed": "Transaction failed"
 }
