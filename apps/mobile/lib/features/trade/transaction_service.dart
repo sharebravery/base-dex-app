@@ -35,6 +35,9 @@ final class TransactionService {
       to: token,
       data: encodeApprove(spender, amount),
       value: BigInt.zero,
+      // TODO(phase-4): replace placeholder gas params with a FeeEstimator/GasOracle
+      // query before mainnet wiring. Current values (100k gas, 1 wei fees) will
+      // strand approve transactions on real Base.
       gasLimit: BigInt.from(100000),
       maxFeePerGas: BigInt.from(1),
       maxPriorityFeePerGas: BigInt.from(1),
@@ -53,6 +56,9 @@ final class TransactionService {
       data: quote.transactionData,
       value: quote.transactionValue,
       gasLimit: quote.gas,
+      // TODO(phase-4): quote.gasPrice is 0x's legacy gasPrice hint; using it as
+      // EIP-1559 maxFeePerGas with zero priority underprices on a rising basefee.
+      // Add a safety multiplier and non-zero priority fee before mainnet wiring.
       maxFeePerGas: quote.gasPrice,
       maxPriorityFeePerGas: BigInt.zero,
       nonce: await chain.nonce(owner),

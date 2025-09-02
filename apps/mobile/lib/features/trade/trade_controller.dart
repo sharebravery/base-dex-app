@@ -55,11 +55,13 @@ final class TradeController extends ChangeNotifier {
           notifyListeners();
         }
       } catch (_) {
-        state = state.copyWith(
-          loadingPrice: false,
-          errorCode: 'price_unavailable',
-        );
-        notifyListeners();
+        if (state.request == request) {
+          state = state.copyWith(
+            loadingPrice: false,
+            errorCode: 'price_unavailable',
+          );
+          notifyListeners();
+        }
       } finally {
         completer.complete();
       }
