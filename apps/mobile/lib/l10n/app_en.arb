@@ -45,5 +45,11 @@
   "swapping": "Swapping…",
   "transactionSubmitted": "Transaction submitted",
   "transactionConfirmed": "Transaction confirmed",
-  "transactionFailed": "Transaction failed"
+  "transactionFailed": "Transaction failed",
+  "wallet": "Wallet",
+  "preferBiometrics": "Prefer biometrics",
+  "biometricsSubtitle": "Device authentication remains required for Approve, Swap, and Withdraw.",
+  "riskDisclosure": "Risk disclosure",
+  "riskDisclosureBody": "On-chain transactions are irreversible.",
+  "signOut": "Sign out"
 }

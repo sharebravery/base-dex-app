@@ -9,5 +9,7 @@ export type Bindings = {
   JWT_SECRET: string;
   SIWE_DOMAIN: string;
   SIWE_URI: string;
+  BASE_RPC_URL: string;
+  BASE_USDC_ADDRESS: string;
   HYPERDRIVE: Hyperdrive;
 };
