@@ -51,5 +51,21 @@
   "biometricsSubtitle": "Device authentication remains required for Approve, Swap, and Withdraw.",
   "riskDisclosure": "Risk disclosure",
   "riskDisclosureBody": "On-chain transactions are irreversible.",
-  "signOut": "Sign out"
+  "signOut": "Sign out",
+  "depositOnBase": "Deposit on Base",
+  "copyAddress": "Copy address",
+  "depositWarning": "Only send supported assets on Base. Assets sent on another network may not appear.",
+  "withdraw": "Withdraw",
+  "deposit": "Deposit",
+  "activity": "Activity",
+  "recipientAddress": "Recipient address",
+  "amount": "Amount",
+  "confirmWithdraw": "Confirm Withdraw",
+  "invalidAddress": "Invalid address",
+  "invalidAmount": "Invalid amount",
+  "tooManyDecimals": "Too many decimals",
+  "pending": "Pending",
+  "confirmed": "Confirmed",
+  "failed": "Failed",
+  "viewOnExplorer": "View on Base explorer"
 }

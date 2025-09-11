@@ -46,5 +46,21 @@
   "biometricsSubtitle": "Approve、Swap 和 Withdraw 仍然需要设备认证。",
   "riskDisclosure": "风险披露",
   "riskDisclosureBody": "链上交易不可撤销。",
-  "signOut": "退出登录"
+  "signOut": "退出登录",
+  "depositOnBase": "在 Base 存入",
+  "copyAddress": "复制地址",
+  "depositWarning": "仅发送 Base 网络支持的资产。使用其他网络发送的资产可能无法显示。",
+  "withdraw": "提取",
+  "deposit": "存入",
+  "activity": "活动",
+  "recipientAddress": "收款地址",
+  "amount": "数量",
+  "confirmWithdraw": "确认提取",
+  "invalidAddress": "地址无效",
+  "invalidAmount": "数量无效",
+  "tooManyDecimals": "小数位过多",
+  "pending": "待处理",
+  "confirmed": "已确认",
+  "failed": "失败",
+  "viewOnExplorer": "在 Base 浏览器查看"
 }

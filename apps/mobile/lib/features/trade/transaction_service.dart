@@ -47,6 +47,47 @@ final class TransactionService {
     return chain.broadcast(await wallet.signTransaction(request));
   }
 
+  Future<String> sendNative({
+    required String owner,
+    required String to,
+    required BigInt amount,
+  }) async {
+    final request = EvmTransactionRequest(
+      to: to,
+      data: '0x',
+      value: amount,
+      // TODO(phase-4-bootstrap): placeholder gas params - replace with
+      // FeeEstimator before mainnet wiring.
+      gasLimit: BigInt.from(21000),
+      maxFeePerGas: BigInt.from(1),
+      maxPriorityFeePerGas: BigInt.from(1),
+      nonce: await chain.nonce(owner),
+      chainId: 8453,
+    );
+    return chain.broadcast(await wallet.signTransaction(request));
+  }
+
+  Future<String> sendErc20Transfer({
+    required String owner,
+    required String token,
+    required String to,
+    required BigInt amount,
+  }) async {
+    final request = EvmTransactionRequest(
+      to: token,
+      data: encodeErc20Transfer(to, amount),
+      value: BigInt.zero,
+      // TODO(phase-4-bootstrap): placeholder gas params - replace with
+      // FeeEstimator before mainnet wiring.
+      gasLimit: BigInt.from(65000),
+      maxFeePerGas: BigInt.from(1),
+      maxPriorityFeePerGas: BigInt.from(1),
+      nonce: await chain.nonce(owner),
+      chainId: 8453,
+    );
+    return chain.broadcast(await wallet.signTransaction(request));
+  }
+
   Future<String> swap({required String owner, required SwapQuote quote}) async {
     if (quote.transactionTo.toLowerCase() != allowedSettler.toLowerCase()) {
       throw StateError('Unexpected Swap destination');
@@ -71,6 +112,13 @@ final class TransactionService {
 String encodeApprove(String spender, BigInt amount) {
   final selector = '095ea7b3';
   final address = spender.toLowerCase().replaceFirst('0x', '').padLeft(64, '0');
+  final value = amount.toRadixString(16).padLeft(64, '0');
+  return '0x$selector$address$value';
+}
+
+String encodeErc20Transfer(String to, BigInt amount) {
+  const selector = 'a9059cbb';
+  final address = to.toLowerCase().replaceFirst('0x', '').padLeft(64, '0');
   final value = amount.toRadixString(16).padLeft(64, '0');
   return '0x$selector$address$value';
 }
