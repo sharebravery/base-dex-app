@@ -12,9 +12,15 @@ jobs:
           cache: true
       - run: flutter pub get
         working-directory: apps/mobile
+      - run: flutter gen-l10n
+        working-directory: apps/mobile
+      - run: dart run build_runner build --delete-conflicting-outputs
+        working-directory: apps/mobile
+      - name: Verify generated files are committed
+        run: git diff --exit-code -- 'apps/mobile/lib/l10n/*' 'apps/mobile/lib/**/*.g.dart' 'apps/mobile/lib/**/*.freezed.dart'
       - run: flutter analyze
         working-directory: apps/mobile
-      - run: flutter test
+      - run: flutter test --update-goldens=false
         working-directory: apps/mobile
 
   api:
@@ -35,3 +41,14 @@ jobs:
         working-directory: apps/api
       - run: pnpm test
         working-directory: apps/api
+
+  secret-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Refuse committed secrets and private-key handles
+        run: |
+          if grep -R -n --exclude-dir=node_modules -E 'getPrivateKeyForSigning|BEGIN PRIVATE KEY|ZEROX_API_KEY=' apps docs; then
+            echo "::error::forbidden secret or private-key handle committed"
+            exit 1
+          fi

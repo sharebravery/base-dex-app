@@ -40,6 +40,45 @@ describe('verified trade facts', () => {
       }),
     ).toThrow('sender_mismatch');
   });
+
+  it('rejects an unexpected destination', () => {
+    expect(() =>
+      validateVerifiedTrade({
+        chainId: 8453,
+        status: 1,
+        from: '0x1111111111111111111111111111111111111111',
+        to: '0x9999999999999999999999999999999999999999',
+        authenticatedWallet: '0x1111111111111111111111111111111111111111',
+        allowedSettler: '0x0000000000000000000000000000000000000002',
+      }),
+    ).toThrow('unexpected_destination');
+  });
+
+  it('rejects a wrong chain id', () => {
+    expect(() =>
+      validateVerifiedTrade({
+        chainId: 1,
+        status: 1,
+        from: '0x1111111111111111111111111111111111111111',
+        to: '0x0000000000000000000000000000000000000002',
+        authenticatedWallet: '0x1111111111111111111111111111111111111111',
+        allowedSettler: '0x0000000000000000000000000000000000000002',
+      }),
+    ).toThrow('wrong_chain');
+  });
+
+  it('accepts a canonical Base 0x settler receipt', () => {
+    expect(() =>
+      validateVerifiedTrade({
+        chainId: 8453,
+        status: 1,
+        from: '0x1111111111111111111111111111111111111111',
+        to: '0x0000000000000000000000000000000000000002',
+        authenticatedWallet: '0x1111111111111111111111111111111111111111',
+        allowedSettler: '0x0000000000000000000000000000000000000002',
+      }),
+    ).not.toThrow();
+  });
 });
 
 describe('decodeUsdcDirection', () => {
@@ -98,4 +137,27 @@ describe('decodeUsdcDirection', () => {
       'missing_usdc_transfer',
     );
   });
+});
+
+// TODO(phase-4-followup): route-level integration coverage.
+//
+// The following cases exercise the full `POST /v1/trades/verify` route with
+// mocked `fetch` for BASE_RPC_URL responses. They are gated behind `.skip`
+// because they additionally require:
+//   - a way to bypass or fake `requireAppSession` (currently expects a valid
+//     Supabase-signed session JWT), and
+//   - a fake or in-memory `withDb` for the Drizzle client (currently binds a
+//     Cloudflare Hyperdrive/D1 pool that is not available in unit tests).
+// Reintroduce these once a test-only Hono app + in-memory DB fixture land in
+// apps/api/test/support.
+describe.skip('POST /v1/trades/verify — route-level fixtures', () => {
+  it('duplicate (chainId, txHash) insertion is idempotent via onConflictDoNothing', async () => {
+    // Requires live/mocked withDb.
+  });
+  it('failed receipt (status 0x0) returns a structured 4xx', async () => {
+    // Requires mocked fetch + a route wrapper that maps validator errors to
+    // structured JSON.
+  });
+  it('sender mismatch on the RPC receipt is rejected', async () => {});
+  it('unexpected destination (to !== ZEROX_SETTLER) is rejected', async () => {});
 });
