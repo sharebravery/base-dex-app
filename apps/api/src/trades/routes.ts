@@ -34,79 +34,97 @@ async function rpc<T>(env: Bindings, method: string, params: unknown[]) {
 }
 
 tradeRoutes.post('/trades/verify', async (context) => {
-  const { txHash } = verifySchema.parse(await context.req.json());
-  const receipt = await rpc<{
-    status: string;
-    from: string;
-    to: string;
-    blockNumber: string;
-    logs: RpcLog[];
-  }>(context.env, 'eth_getTransactionReceipt', [txHash]);
-  const transaction = await rpc<{
-    value: string;
-  }>(context.env, 'eth_getTransactionByHash', [txHash]);
+  try {
+    const { txHash } = verifySchema.parse(await context.req.json());
+    const receipt = await rpc<{
+      status: string;
+      from: string;
+      to: string;
+      blockNumber: string;
+      logs: RpcLog[];
+    }>(context.env, 'eth_getTransactionReceipt', [txHash]);
+    const transaction = await rpc<{
+      value: string;
+    }>(context.env, 'eth_getTransactionByHash', [txHash]);
 
-  const walletAddress = context.get('walletAddress');
-  validateVerifiedTrade({
-    chainId: 8453,
-    status: Number.parseInt(receipt.status, 16),
-    from: receipt.from,
-    to: receipt.to,
-    authenticatedWallet: walletAddress,
-    allowedSettler: context.env.ZEROX_SETTLER,
-  });
+    const walletAddress = context.get('walletAddress');
+    validateVerifiedTrade({
+      chainId: 8453,
+      status: Number.parseInt(receipt.status, 16),
+      from: receipt.from,
+      to: receipt.to,
+      authenticatedWallet: walletAddress,
+      allowedSettler: context.env.ZEROX_SETTLER,
+    });
 
-  const direction = decodeUsdcDirection({
-    logs: receipt.logs,
-    walletAddress,
-    usdcAddress: context.env.BASE_USDC_ADDRESS,
-  });
+    const direction = decodeUsdcDirection({
+      logs: receipt.logs,
+      walletAddress,
+      usdcAddress: context.env.BASE_USDC_ADDRESS,
+    });
 
-  const profile = await withDb(context.env, async (db) => {
-    const rows = await db
-      .select()
-      .from(profiles)
-      .where(eq(profiles.walletAddress, walletAddress))
-      .limit(1);
-    return rows[0];
-  });
-  if (!profile) return context.json({ error: 'profile_not_found' }, 404);
+    const profile = await withDb(context.env, async (db) => {
+      const rows = await db
+        .select()
+        .from(profiles)
+        .where(eq(profiles.walletAddress, walletAddress))
+        .limit(1);
+      return rows[0];
+    });
+    if (!profile) return context.json({ error: 'profile_not_found' }, 404);
 
-  const nativeValue = BigInt(transaction.value);
-  const record =
-    direction.side === 'buy_eth'
-      ? {
-          sellToken: context.env.BASE_USDC_ADDRESS,
-          buyToken: 'native:8453',
-          sellAmount: direction.usdcAmount,
-          buyAmount: null,
-        }
-      : {
-          sellToken: 'native:8453',
-          buyToken: context.env.BASE_USDC_ADDRESS,
-          sellAmount: nativeValue,
-          buyAmount: direction.usdcAmount,
-        };
+    const nativeValue = BigInt(transaction.value);
+    const record =
+      direction.side === 'buy_eth'
+        ? {
+            sellToken: context.env.BASE_USDC_ADDRESS,
+            buyToken: 'native:8453',
+            sellAmount: direction.usdcAmount,
+            buyAmount: null,
+          }
+        : {
+            sellToken: 'native:8453',
+            buyToken: context.env.BASE_USDC_ADDRESS,
+            sellAmount: nativeValue,
+            buyAmount: direction.usdcAmount,
+          };
 
-  await withDb(context.env, (db) =>
-    db
-      .insert(appTrades)
-      .values({
-        profileId: profile.id,
-        chainId: 8453,
-        txHash,
-        ...record,
-        metadata: {
-          side: direction.side,
-          receiptBlock: receipt.blockNumber,
-          nativeBuyAmountUnavailable: direction.side === 'buy_eth',
-        },
-        executedAt: new Date(),
-      })
-      .onConflictDoNothing(),
-  );
+    await withDb(context.env, (db) =>
+      db
+        .insert(appTrades)
+        .values({
+          profileId: profile.id,
+          chainId: 8453,
+          txHash,
+          ...record,
+          metadata: {
+            side: direction.side,
+            receiptBlock: receipt.blockNumber,
+            nativeBuyAmountUnavailable: direction.side === 'buy_eth',
+          },
+          executedAt: new Date(),
+        })
+        .onConflictDoNothing(),
+    );
 
-  return context.json({ txHash, verified: true, side: direction.side });
+    return context.json({ txHash, verified: true, side: direction.side });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'unknown';
+    const clientErrors = new Set([
+      'wrong_chain',
+      'failed_receipt',
+      'sender_mismatch',
+      'unexpected_destination',
+      'missing_usdc_transfer',
+    ]);
+    if (clientErrors.has(message)) {
+      return context.json({ error: message }, 400);
+    }
+    if (message.startsWith('rpc_')) {
+      return context.json({ error: message }, 502);
+    }
+    return context.json({ error: 'internal_error' }, 500);
+  }
 });
 
 tradeRoutes.get('/trades', async (context) => {

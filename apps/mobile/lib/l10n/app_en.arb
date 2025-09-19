@@ -67,5 +67,9 @@
   "pending": "Pending",
   "confirmed": "Confirmed",
   "failed": "Failed",
-  "viewOnExplorer": "View on Base explorer"
+  "viewOnExplorer": "View on Base explorer",
+  "appearanceSystem": "System",
+  "appearanceLight": "Light",
+  "appearanceDark": "Dark",
+  "submissionFailed": "Transaction submission failed"
 }

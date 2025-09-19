@@ -15,7 +15,10 @@ final class ActivityController {
         .cast<Map<String, Object?>>();
 
     final pendingItems = pending.map(_pendingToActivity).toList();
-    final serverItems = serverRows.map(_serverToActivity).toList();
+    final serverItems = serverRows
+        .map(_serverToActivity)
+        .whereType<ActivityItem>()
+        .toList();
 
     return mergeActivity(pendingItems, serverItems);
   }
@@ -28,13 +31,27 @@ final class ActivityController {
         timestamp: p.createdAt,
       );
 
-  ActivityItem _serverToActivity(Map<String, Object?> row) => ActivityItem(
-        type: ActivityType.swap,
-        status: ActivityStatus.confirmed,
-        title: '${row['sellToken']} → ${row['buyToken']}',
-        txHash: row['txHash']! as String,
-        timestamp: DateTime.parse(row['executedAt']! as String),
-      );
+  ActivityItem? _serverToActivity(Map<String, Object?> row) {
+    final txHash = row['txHash'];
+    final sellToken = row['sellToken'];
+    final buyToken = row['buyToken'];
+    final executedAt = row['executedAt'];
+    if (txHash is! String ||
+        sellToken is! String ||
+        buyToken is! String ||
+        executedAt is! String) {
+      return null;
+    }
+    final parsedTime = DateTime.tryParse(executedAt);
+    if (parsedTime == null) return null;
+    return ActivityItem(
+      type: ActivityType.swap,
+      status: ActivityStatus.confirmed,
+      title: '$sellToken → $buyToken',
+      txHash: txHash,
+      timestamp: parsedTime,
+    );
+  }
 
   ActivityType _pendingOperationToActivityType(PendingOperation op) =>
       switch (op) {

@@ -62,5 +62,9 @@
   "pending": "待处理",
   "confirmed": "已确认",
   "failed": "失败",
-  "viewOnExplorer": "在 Base 浏览器查看"
+  "viewOnExplorer": "在 Base 浏览器查看",
+  "appearanceSystem": "跟随系统",
+  "appearanceLight": "浅色",
+  "appearanceDark": "深色",
+  "submissionFailed": "交易提交失败"
 }

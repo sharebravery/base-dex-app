@@ -40,7 +40,14 @@ class SettingsScreen extends StatelessWidget {
                 initialValue: settings.appearance,
                 items: [
                   for (final value in AppAppearance.values)
-                    DropdownMenuItem(value: value, child: Text(value.name)),
+                    DropdownMenuItem(
+                      value: value,
+                      child: Text(switch (value) {
+                        AppAppearance.system => context.l10n.appearanceSystem,
+                        AppAppearance.light => context.l10n.appearanceLight,
+                        AppAppearance.dark => context.l10n.appearanceDark,
+                      }),
+                    ),
                 ],
                 onChanged: (value) {
                   if (value != null) controller.update(appearance: value);

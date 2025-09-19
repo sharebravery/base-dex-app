@@ -142,8 +142,10 @@ describe('decodeUsdcDirection', () => {
 // TODO(phase-4-followup): route-level integration coverage.
 //
 // The following cases exercise the full `POST /v1/trades/verify` route with
-// mocked `fetch` for BASE_RPC_URL responses. They are gated behind `.skip`
-// because they additionally require:
+// mocked `fetch` for BASE_RPC_URL responses. Structured error mapping (validator
+// errors → 400, rpc_* errors → 502, unknown → 500) is now implemented in the
+// route handler, so these cases would pass IF they could reach the handler.
+// They remain `.skip`ped because they still require:
 //   - a way to bypass or fake `requireAppSession` (currently expects a valid
 //     Supabase-signed session JWT), and
 //   - a fake or in-memory `withDb` for the Drizzle client (currently binds a

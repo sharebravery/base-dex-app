@@ -46,6 +46,14 @@ class WithdrawScreen extends HookWidget {
       token.symbol == BaseTokens.eth.symbol || token.symbol == BaseTokens.usdc.symbol,
       'WithdrawScreen supports ETH and USDC only',
     );
+    if (token.symbol != BaseTokens.eth.symbol &&
+        token.symbol != BaseTokens.usdc.symbol) {
+      throw ArgumentError.value(
+        token.symbol,
+        'token',
+        'WithdrawScreen supports ETH and USDC only',
+      );
+    }
 
     final addressField = useTextEditingController();
     final amountField = useTextEditingController();
@@ -103,6 +111,7 @@ class WithdrawScreen extends HookWidget {
         stage.value = TransactionStage.submitted;
       } on Object {
         stage.value = TransactionStage.failed;
+        errorCode.value = 'submission_failed';
       }
     }
 
@@ -110,6 +119,7 @@ class WithdrawScreen extends HookWidget {
           'invalid_address' => context.l10n.invalidAddress,
           'invalid_amount' => context.l10n.invalidAmount,
           'too_many_decimals' => context.l10n.tooManyDecimals,
+          'submission_failed' => context.l10n.submissionFailed,
           _ => null,
         };
 
@@ -127,6 +137,7 @@ class WithdrawScreen extends HookWidget {
               const SizedBox(height: 16),
               TextField(
                 controller: addressField,
+                onChanged: (_) => errorCode.value = null,
                 decoration: InputDecoration(
                   labelText: context.l10n.recipientAddress,
                 ),
@@ -134,6 +145,7 @@ class WithdrawScreen extends HookWidget {
               const SizedBox(height: 12),
               TextField(
                 controller: amountField,
+                onChanged: (_) => errorCode.value = null,
                 keyboardType: const TextInputType.numberWithOptions(decimal: true),
                 decoration: InputDecoration(labelText: context.l10n.amount),
               ),
