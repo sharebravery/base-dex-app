@@ -66,5 +66,6 @@
   "appearanceSystem": "跟随系统",
   "appearanceLight": "浅色",
   "appearanceDark": "深色",
-  "submissionFailed": "交易提交失败"
+  "submissionFailed": "交易提交失败",
+  "noActivity": "暂无活动"
 }

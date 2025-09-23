@@ -1,39 +1,56 @@
 import type { Bindings } from '../env';
-import { providerMarketsSchema } from './schema';
 
-const catalog = new Map([
-  ['ethereum', true],
-  ['bitcoin', false],
-  ['solana', false],
-  ['usd-coin', false],
-  ['aerodrome-finance', false],
-  ['degen-base', false],
-]);
+const catalog = [
+  { id: 'ethereum', symbol: 'ETH', name: 'Ethereum', binance: 'ETHUSDT', tradable: true },
+  { id: 'bitcoin', symbol: 'BTC', name: 'Bitcoin', binance: 'BTCUSDT', tradable: false },
+  { id: 'solana', symbol: 'SOL', name: 'Solana', binance: 'SOLUSDT', tradable: false },
+  { id: 'usd-coin', symbol: 'USDC', name: 'USD Coin', binance: null, tradable: false },
+] as const;
 
-export async function getMarkets(env: Bindings) {
-  const ids = [...catalog.keys()].join(',');
-  const url = new URL(`${env.MARKET_API_BASE_URL}/coins/markets`);
-  url.searchParams.set('vs_currency', 'usd');
-  url.searchParams.set('ids', ids);
-  url.searchParams.set('price_change_percentage', '24h');
+type Ticker = {
+  symbol: string;
+  lastPrice: string;
+  priceChangePercent: string;
+  quoteVolume: string;
+};
 
-  const response = await fetch(url, {
-    headers: env.MARKET_API_KEY
-      ? { 'x-cg-demo-api-key': env.MARKET_API_KEY }
-      : undefined,
-  });
-  if (!response.ok) throw new Error(`market provider ${response.status}`);
-  const parsed = providerMarketsSchema.parse(await response.json());
+export async function getMarkets(_env: Bindings) {
+  const binanceSymbols = catalog
+    .map((c) => c.binance)
+    .filter((s): s is Exclude<(typeof catalog)[number]['binance'], null> => s !== null);
+  const symbolsParam = JSON.stringify(binanceSymbols);
+  const url = new URL('https://api.binance.com/api/v3/ticker/24hr');
+  url.searchParams.set('symbols', symbolsParam);
+
+  const response = await fetch(url);
+  if (!response.ok) throw new Error(`market_provider_${response.status}`);
+  const tickers = (await response.json()) as Ticker[];
+  const byBinance = new Map(tickers.map((t) => [t.symbol, t]));
 
   return {
-    assets: parsed.map((asset) => ({
-      id: asset.id,
-      symbol: asset.symbol.toUpperCase(),
-      name: asset.name,
-      priceUsd: String(asset.current_price),
-      change24hPercent: String(asset.price_change_percentage_24h ?? 0),
-      volume24hUsd: String(asset.total_volume),
-      tradable: catalog.get(asset.id) === true,
-    })),
+    assets: catalog.map((c) => {
+      if (c.binance === null) {
+        return {
+          id: c.id,
+          symbol: c.symbol,
+          name: c.name,
+          priceUsd: '1.00',
+          change24hPercent: '0.00',
+          volume24hUsd: '0',
+          tradable: c.tradable,
+        };
+      }
+      const t = byBinance.get(c.binance);
+      if (!t) throw new Error(`missing_ticker_${c.binance}`);
+      return {
+        id: c.id,
+        symbol: c.symbol,
+        name: c.name,
+        priceUsd: t.lastPrice,
+        change24hPercent: t.priceChangePercent,
+        volume24hUsd: t.quoteVolume,
+        tradable: c.tradable,
+      };
+    }),
   };
 }

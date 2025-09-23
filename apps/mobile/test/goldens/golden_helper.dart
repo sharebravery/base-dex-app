@@ -1,19 +1,27 @@
+import 'package:dex_app/features/market/market_models.dart';
+import 'package:dex_app/features/market/market_providers.dart';
+import 'package:dex_app/features/market/market_repository.dart';
 import 'package:dex_app/l10n/app_localizations.dart';
 import 'package:dex_app/theme/app_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-/// Deterministic golden harness for Phase 4 Task 13.
-///
-/// Pumps a [MaterialApp] with:
-/// - Fixed [locale] (en or zh)
-/// - [AppTheme.light] or [AppTheme.dark]
-/// - MediaQuery override for size and text scaler
-/// - Localizations delegates
-/// - A single deterministic child
-///
-/// Callers must set the surface size in [setUp] with
-/// `tester.binding.setSurfaceSize(size)` and reset it in [tearDown].
+final class _FixtureMarketRepository implements MarketRepository {
+  @override
+  Future<List<MarketAsset>> getAssets() async => MarketAsset.fixtures;
+
+  @override
+  Future<List<Candle>> getCandles({
+    required String assetId,
+    required String interval,
+  }) async =>
+      const [];
+}
+
+/// Deterministic golden harness. Pumps a [MaterialApp] wrapped in a
+/// [ProviderScope] with fixture-backed data providers so widgets that read
+/// riverpod don't blow up under `flutter test`.
 Future<void> pumpGolden(
   WidgetTester tester, {
   required Widget child,
@@ -26,19 +34,27 @@ Future<void> pumpGolden(
   addTearDown(() => tester.binding.setSurfaceSize(null));
 
   await tester.pumpWidget(
-    MaterialApp(
-      debugShowCheckedModeBanner: false,
-      locale: locale,
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      theme: brightness == Brightness.dark ? AppTheme.dark() : AppTheme.light(),
-      home: MediaQuery(
-        data: MediaQueryData(
-          size: size,
-          devicePixelRatio: 1,
-          textScaler: TextScaler.linear(textScale),
+    ProviderScope(
+      overrides: [
+        marketRepositoryProvider
+            .overrideWithValue(_FixtureMarketRepository()),
+      ],
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        locale: locale,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        theme: brightness == Brightness.dark
+            ? AppTheme.dark()
+            : AppTheme.light(),
+        home: MediaQuery(
+          data: MediaQueryData(
+            size: size,
+            devicePixelRatio: 1,
+            textScaler: TextScaler.linear(textScale),
+          ),
+          child: child,
         ),
-        child: child,
       ),
     ),
   );

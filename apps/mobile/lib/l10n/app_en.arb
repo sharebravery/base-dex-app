@@ -71,5 +71,6 @@
   "appearanceSystem": "System",
   "appearanceLight": "Light",
   "appearanceDark": "Dark",
-  "submissionFailed": "Transaction submission failed"
+  "submissionFailed": "Transaction submission failed",
+  "noActivity": "No activity yet"
 }

@@ -15,7 +15,8 @@ class DexApp extends StatelessWidget {
       locale: locale,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
-      theme: AppTheme.light(),
+      themeMode: ThemeMode.dark,
+      theme: AppTheme.dark(),
       darkTheme: AppTheme.dark(),
       routerConfig: appRouter,
     );

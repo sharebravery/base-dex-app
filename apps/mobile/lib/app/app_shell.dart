@@ -26,6 +26,10 @@ class AppShell extends StatelessWidget {
             icon: const Icon(Icons.pie_chart_outline),
             label: context.l10n.portfolio,
           ),
+          NavigationDestination(
+            icon: const Icon(Icons.settings),
+            label: context.l10n.settings,
+          ),
         ];
 
         if (windowClass == WindowClass.compact) {
