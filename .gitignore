@@ -1,14 +1,29 @@
 # macOS
 .DS_Store
 
-# Node (apps/api) - pnpm-lock.yaml IS committed per project constraints
+# Node
 node_modules/
 
-# Planning docs are local-only, not tracked in git
+# SDD planning notes (local only)
 doc/
+.superpowers/
 
-# SDD working artifacts (self-ignoring, but kept here for clarity)
-.superpowers/sdd/
+# Assistant / editor scratch state
+.claude/
+CLAUDE.md
+AGENTS.md
+.cursor/
+.playwright-mcp/
+
+# Local screenshot scratch (real screenshots live in /screenshots)
+/market-live-*.png
 
 # Cloudflare Workers local dev cache
 apps/api/.wrangler/
+
+# Flutter build outputs
+apps/mobile/build/
+apps/mobile/.dart_tool/
+
+# Golden failures — never commit diff artifacts
+apps/mobile/test/goldens/failures/
