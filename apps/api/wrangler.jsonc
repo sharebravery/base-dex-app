@@ -6,6 +6,9 @@
   "compatibility_flags": ["nodejs_compat"],
   "vars": {
     "APP_ENV": "mock",
-    "MARKET_API_BASE_URL": "https://api.coingecko.com/api/v3"
+    "MARKET_API_BASE_URL": "https://api.binance.com",
+    "KYBERSWAP_CLIENT_ID": "dex-demo",
+    "ALLOWED_SETTLER": "0x6131B5fae19EA4f9D964eAc0408E4408b66337b5",
+    "CORS_ORIGINS": ""
   }
 }

@@ -12,22 +12,46 @@ export const swapRequestSchema = z.object({
   slippageBps: z.number().int().min(10).max(300),
 });
 
-export const providerQuoteSchema = z.object({
-  buyAmount: z.string(),
-  minBuyAmount: z.string().optional(),
-  sellAmount: z.string(),
-  totalNetworkFee: z.string().optional().default('0'),
-  issues: z.object({
-    allowance: z.object({ spender: address }).nullable().optional(),
-  }).optional(),
-  transaction: z.object({
-    to: address,
-    data: z.string().regex(/^0x[a-fA-F0-9]*$/),
-    value: z.string(),
-    gas: z.string(),
-    gasPrice: z.string().optional(),
-  }).optional(),
-  route: z.object({
-    fills: z.array(z.object({ source: z.string() })).default([]),
-  }).optional(),
+/**
+ * Subset of KyberSwap `/base/api/v1/routes` we care about.
+ * See docs.kyberswap.com/developer-guide/aggregator-api → EVM Swaps.
+ *
+ * We deliberately DO NOT constrain `pool` to a `0x…` address regex — some
+ * hops (WETH wrap, native-token intermediaries, bridge-style adapters)
+ * return non-address pool identifiers, and we only surface `exchange` to
+ * the UI anyway.
+ */
+const routeHopSchema = z.object({
+  pool: z.string(),
+  tokenIn: address,
+  tokenOut: address,
+  swapAmount: z.string(),
+  amountOut: z.string(),
+  exchange: z.string(),
+});
+
+export const kyberRouteSummarySchema = z.object({
+  tokenIn: address,
+  tokenOut: address,
+  amountIn: z.string(),
+  amountInUsd: z.string().optional(),
+  amountOut: z.string(),
+  amountOutUsd: z.string().optional(),
+  gas: z.string(),
+  gasPrice: z.string().optional(),
+  gasUsd: z.string().optional(),
+  l1FeeUsd: z.string().optional(),
+  route: z.array(z.array(routeHopSchema)),
+  routeID: z.string(),
+  checksum: z.string(),
+  timestamp: z.number(),
+});
+
+export const kyberRoutesResponseSchema = z.object({
+  code: z.number(),
+  message: z.string().optional(),
+  data: z.object({
+    routeSummary: kyberRouteSummarySchema,
+    routerAddress: address,
+  }),
 });

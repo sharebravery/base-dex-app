@@ -54,7 +54,7 @@ tradeRoutes.post('/trades/verify', async (context) => {
       from: receipt.from,
       to: receipt.to,
       authenticatedWallet: walletAddress,
-      allowedSettler: context.env.ZEROX_SETTLER,
+      allowedSettler: context.env.ALLOWED_SETTLER,
     });
 
     const direction = decodeUsdcDirection({
