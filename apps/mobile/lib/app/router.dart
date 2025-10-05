@@ -2,7 +2,6 @@ import 'package:dex_app/app/app_shell.dart';
 import 'package:dex_app/core/web3/base_tokens.dart';
 import 'package:dex_app/features/auth/auth_providers.dart';
 import 'package:dex_app/features/auth/sign_in_screen.dart';
-import 'package:dex_app/features/market/market_models.dart';
 import 'package:dex_app/features/market/market_screen.dart';
 import 'package:dex_app/features/market/pair_detail_screen.dart';
 import 'package:dex_app/features/portfolio/activity_screen.dart';
@@ -48,11 +47,7 @@ final appRouter = GoRouter(
                   path: ':assetId',
                   builder: (context, state) {
                     final assetId = state.pathParameters['assetId']!;
-                    final asset = MarketAsset.fixtures.firstWhere(
-                      (asset) => asset.id == assetId,
-                      orElse: () => MarketAsset.fixtures.first,
-                    );
-                    return PairDetailScreen(asset: asset);
+                    return PairDetailScreen(assetId: assetId);
                   },
                 ),
               ],

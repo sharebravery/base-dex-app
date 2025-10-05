@@ -12,16 +12,31 @@ final class _FakeMarketRepository implements MarketRepository {
   Future<List<MarketAsset>> getAssets() async => MarketAsset.fixtures;
 
   @override
+  Future<Map<String, List<double>>> getSparklines() async => const {};
+
+  @override
   Future<List<Candle>> getCandles({
     required String assetId,
     required String interval,
   }) async {
     return const [];
   }
+
+  @override
+  Future<List<RecentTrade>> getRecentTrades({
+    required String assetId,
+    int limit = 30,
+  }) async =>
+      const [];
 }
 
 void main() {
-  testWidgets('shows catalog and disables non-tradable assets', (tester) async {
+  testWidgets('renders the catalog, hero, and trending strips', (tester) async {
+    // Use a taller viewport so the main list sits below the fold and both
+    // the hero card and trending carousels are laid out.
+    await tester.binding.setSurfaceSize(const Size(390, 1400));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
@@ -35,9 +50,13 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    expect(find.text('ETH'), findsOneWidget);
-    expect(find.text('BTC'), findsOneWidget);
-    expect(find.text('Tradable'), findsOneWidget);
-    expect(find.text('Market data only'), findsWidgets);
+    // ETH and BTC appear at least once — in the trending carousel and the
+    // filter-agnostic main list.
+    expect(find.text('ETH'), findsWidgets);
+    expect(find.text('BTC'), findsWidgets);
+    // Hero card label survives localization.
+    expect(find.text('MARKET OVERVIEW'), findsOneWidget);
+    // Category filter chip label — proves the sticky header renders.
+    expect(find.text('All'), findsOneWidget);
   });
 }

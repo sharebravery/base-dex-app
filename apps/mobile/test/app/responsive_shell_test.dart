@@ -10,9 +10,17 @@ final class _FakeMarketRepository implements MarketRepository {
   @override
   Future<List<MarketAsset>> getAssets() async => MarketAsset.fixtures;
   @override
+  Future<Map<String, List<double>>> getSparklines() async => const {};
+  @override
   Future<List<Candle>> getCandles({
     required String assetId,
     required String interval,
+  }) async =>
+      const [];
+  @override
+  Future<List<RecentTrade>> getRecentTrades({
+    required String assetId,
+    int limit = 30,
   }) async =>
       const [];
 }
