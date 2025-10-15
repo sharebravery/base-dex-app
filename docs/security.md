@@ -49,14 +49,18 @@ readiness.
   signature + expiry on every protected route (`/v1/profile`, `/v1/settings`,
   `/v1/watchlist`, `/v1/trades*`).
 
-## 0x allowlists
+## Router allowlist
 
 - `TransactionService` refuses to sign an approve whose spender does not equal
   the injected `allowedSpender`, and refuses to sign a swap whose
   `quote.transactionTo` does not equal the injected `allowedSettler`.
-- Both allowlisted addresses come from build-time constants (Base mainnet 0x
-  contracts) and are held constant across a session; they are NOT taken from
-  the quote payload directly.
+- Both allowlisted addresses come from build-time constants pointing at the
+  KyberSwap Base router (`0x6131B5fae19EA4f9D964eAc0408E4408b66337b5`) and are
+  held constant across a session; they are NOT taken from the quote payload.
+- The demo path never reaches these guards — the route-preview quote carries
+  `transactionData: null` and `TradeExecutor` short-circuits before signing.
+  The checks stay in place to prevent regressions if the `/route/build`
+  broadcast path is ever wired.
 
 ## Exact approval policy
 
@@ -67,26 +71,34 @@ readiness.
 
 ## Receipt / log verification
 
-- After a swap is broadcast, the mobile client posts `{ txHash }` to
-  `/v1/trades/verify`. The Worker fetches the receipt + transaction via
-  `eth_getTransactionReceipt` / `eth_getTransactionByHash` and asserts:
+- After a swap is broadcast (not exercised in demo mode), the mobile client
+  posts `{ txHash }` to `/v1/trades/verify`. The Worker fetches the receipt +
+  transaction via `eth_getTransactionReceipt` / `eth_getTransactionByHash`
+  and asserts:
   - `chainId == 8453`
   - `receipt.status == 1`
   - `receipt.from == authenticatedWallet`
-  - `receipt.to == ZEROX_SETTLER`
+  - `receipt.to == env.ALLOWED_SETTLER`
   - a `Transfer(address,address,uint256)` USDC log involving the wallet
     address is present, decoded to `buy_eth` or `sell_eth`.
 - All five assertions are unit-tested in `apps/api/test/trades.test.ts`.
 
 ## Logging redaction
 
-- The Worker MUST NOT log wallet private keys, session JWTs, SIWE
-  signatures, or the 0x API key. A CI grep gate refuses any commit that adds
-  a private-key handle (getter method whose name ends in
-  `PrivateKeyForSigning`), a raw PEM block header (`-----BEGIN` `PRIVATE`
-  `KEY-----`, without the intra-string spaces this doc uses), or an
-  environment assignment like `ZEROX_` `API_KEY=` under `apps/` or `docs/`.
+- The Worker MUST NOT log wallet private keys, session JWTs, or SIWE
+  signatures. A CI grep gate refuses any commit that adds a private-key
+  handle (getter method whose name ends in `PrivateKeyForSigning`) or a raw
+  PEM block header.
 - The Flutter client logs are limited to public tx hashes and addresses.
+
+## CORS allowlist
+
+- The Worker uses a dynamic origin allowlist (see `apps/api/src/index.ts`).
+  Non-browser callers (Flutter native / curl / server-to-server, i.e. no
+  `Origin` header) pass through. Browser clients must match:
+  - `CORS_ORIGINS` env (comma-separated; supports single-level `*` wildcard)
+  - `http://localhost:*` / `http://127.0.0.1:*` in dev (`APP_ENV != production`)
+- No wildcard `*` fallback in production.
 
 ## Restricted database role
 
@@ -108,14 +120,15 @@ readiness.
 
 ## Manual verification checklist (operator-run)
 
-Before promoting a build:
+Before promoting a build past demo mode:
 
-1. Confirm the shipped `ZEROX_SETTLER` address matches the current Base
-   mainnet 0x Settler.
+1. Confirm `env.ALLOWED_SETTLER` matches the current KyberSwap Base router
+   (`0x6131B5fae19EA4f9D964eAc0408E4408b66337b5`) — cross-check on BaseScan.
 2. Confirm the shipped USDC contract equals the canonical Base USDC address
    (`0x833589fCD6eDb6E08f4c7C32D4f71b54bDa02913`).
-3. Perform one low-value swap with a dedicated staging wallet and, before
-   confirming, manually compare `chainId`, `sellAmount`, `minBuyAmount`,
+3. If enabling real swaps (out of scope for this branch): wire KyberSwap
+   `/route/build` and perform one low-value swap with a dedicated staging
+   wallet. Manually compare `chainId`, `sellAmount`, `minBuyAmount`,
    `allowanceTarget`, `transactionTo`, and `gas` against the Quote.
 4. Verify the resulting `app_trades` row on Postgres:
    `(chainId, txHash)` should be unique and `direction` should match the

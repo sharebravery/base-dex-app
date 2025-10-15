@@ -20,7 +20,7 @@ apps/
       auth/        SIWE challenge / verify + session middleware
       market/      /v1/markets, /v1/candles
       profile/     /v1/profile, /v1/settings, /v1/watchlist
-      swap/        /v1/swap/price, /v1/swap/quote (0x proxy shape)
+      swap/        /v1/swap/price, /v1/swap/quote (KyberSwap route-preview)
       trades/      /v1/trades, /v1/trades/verify + receipt verifier
       db/          Drizzle schema + Hyperdrive-backed client factory
     test/          vitest, one file per feature slice
@@ -82,15 +82,47 @@ Phase 5.
 | PUT    | `/v1/settings`       | app session | Persist theme / locale                      |
 | GET    | `/v1/watchlist`      | app session | Return watchlist symbols                    |
 | PUT    | `/v1/watchlist`      | app session | Replace watchlist symbols                   |
-| GET    | `/v1/markets`        | none        | Static market catalog (Base tradable pair)  |
-| GET    | `/v1/candles`        | none        | OHLC series                                 |
-| POST   | `/v1/swap/price`     | none        | 0x price proxy shape                        |
-| POST   | `/v1/swap/quote`     | none        | 0x quote proxy shape                        |
+| GET    | `/v1/markets`        | none        | 24h ticker catalog via Binance              |
+| GET    | `/v1/candles`        | none        | OHLC series via Binance klines              |
+| POST   | `/v1/swap/price`     | none        | KyberSwap `/routes` proxy (route preview)   |
+| POST   | `/v1/swap/quote`     | none        | KyberSwap `/routes` proxy (route preview)   |
 | POST   | `/v1/trades/verify`  | app session | Recheck on-chain receipt + insert app trade |
 | GET    | `/v1/trades`         | app session | List app trades for the profile             |
 
-Real 0x integration behind `/v1/swap/*` is DEFERRED; the proxy currently
-returns fixture-shaped payloads that match the SwapRepository JSON contract.
+## Data providers
+
+All read paths use free, keyless public APIs:
+
+- **Prices & 24h stats**: Binance REST `/api/v3/ticker/24hr` (weight 2, no key)
+- **Candles**: Binance REST `/api/v3/klines` — `1d` returns 30 daily bars,
+  `7d` returns 168 hourly bars, `30d` returns 720 hourly bars
+- **Swap route + quote**: KyberSwap aggregator `/base/api/v1/routes` — no API
+  key; only a `x-client-id` header (`env.KYBERSWAP_CLIENT_ID`, defaults
+  to `dex-demo`) so we get non-throttled rate limits
+- **Portfolio balances**: `https://mainnet.base.org` public RPC via web3dart
+
+The mobile client never calls these providers directly — everything goes
+through the Worker so we can layer caching (`Cache-Control` on Binance
+proxies) and CORS on top.
+
+## Demo-mode boundary
+
+The route-preview swap intentionally does NOT hit KyberSwap's
+`/route/build`. That endpoint returns encoded calldata plus a `sender` /
+`recipient` binding; without it we can't produce a signable transaction. The
+mobile client treats a `null` `transactionData` on the quote as an explicit
+signal for "route-preview only" and:
+
+1. Renders a "Demo · quotes are real, nothing is broadcast" banner on the
+   Trade screen and a chip on the Confirmation Sheet.
+2. Short-circuits `_confirm` to a SnackBar instead of dispatching
+   `TradeExecutor.execute`.
+3. Displays the router address as the destination row, formatted as
+   `0x6131…37b5` (short address), so viewers can copy it onto BaseScan.
+
+Real signing / broadcast would only re-enter through the `TradeExecutor` code
+path once a build-flag flips (`APP_ENV == 'production'`) AND the Worker adds
+a `/route/build` step. Both are out of scope for this branch.
 
 ## SIWE sequence
 
@@ -176,10 +208,9 @@ the same store state after each poll completes.
   are not exercised end-to-end.
 - Live Supabase/Postgres connection is not exercised in tests; Drizzle client
   factory expects Hyperdrive bindings.
-- Bootstrap wiring for `/trade`, `/portfolio`, `/settings`, `/withdraw`,
-  `/deposit`, and `/activity` router entries — screens exist but the provider
-  overrides are not composed at `main.dart`.
-- Real 0x integration behind `/v1/swap/*`.
+- KyberSwap `/route/build` (which returns encoded calldata + `sender`
+  binding). Without it the demo shows the route/quote but cannot sign a
+  transaction — see "Demo-mode boundary" above.
 - Native biometric plugin wiring (`local_auth`) — `LocalAuthBiometricGate` is
   implemented; the plugin platform channel is not exercised in tests.
 - End-to-end integration tests via the `integration_test` package (deferred to
