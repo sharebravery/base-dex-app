@@ -3,6 +3,7 @@ import 'package:dex_app/features/auth/auth_providers.dart';
 import 'package:dex_app/features/trade/confirmation_sheet.dart';
 import 'package:dex_app/features/trade/trade_providers.dart';
 import 'package:dex_app/features/trade/trade_screen.dart';
+import 'package:dex_app/l10n/l10n_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -23,8 +24,8 @@ class TradeScreenWired extends ConsumerWidget {
   Future<void> _confirm(BuildContext context, WidgetRef ref) async {
     final quote = ref.read(tradeControllerProvider).state.quote;
     if (quote == null) return;
-    final executor = ref.read(tradeExecutorProvider);
     final messenger = ScaffoldMessenger.of(context);
+    final l10n = context.l10n;
     await showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
@@ -34,14 +35,24 @@ class TradeScreenWired extends ConsumerWidget {
         currentAllowance: BigInt.zero,
         onConfirm: () async {
           Navigator.pop(sheetContext);
+          // Route-preview quotes carry no calldata — we deliberately never
+          // reach TradeExecutor.execute. Surface that to the user instead of
+          // simulating a fake broadcast animation.
+          if (quote.transactionData == null) {
+            messenger.showSnackBar(
+              SnackBar(content: Text(l10n.demoConfirmed)),
+            );
+            return;
+          }
           try {
+            final executor = ref.read(tradeExecutorProvider);
             await executor.execute(quote);
             messenger.showSnackBar(
-              const SnackBar(content: Text('Trade executed (demo)')),
+              SnackBar(content: Text(l10n.transactionSubmitted)),
             );
           } catch (e) {
             messenger.showSnackBar(
-              SnackBar(content: Text('Trade failed: $e')),
+              SnackBar(content: Text('${l10n.submissionFailed}: $e')),
             );
           }
         },

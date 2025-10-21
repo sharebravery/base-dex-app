@@ -43,7 +43,7 @@ final class ApiSwapRepository implements SwapRepository {
       networkFee: BigInt.parse(json['networkFee']! as String),
       allowanceTarget: json['allowanceTarget'] as String?,
       transactionTo: json['transactionTo']! as String,
-      transactionData: json['transactionData']! as String,
+      transactionData: json['transactionData'] as String?,
       transactionValue: BigInt.parse(json['transactionValue']! as String),
       gas: BigInt.parse(json['gas']! as String),
       gasPrice: BigInt.parse(json['gasPrice']! as String),

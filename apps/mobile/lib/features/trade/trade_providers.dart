@@ -45,12 +45,18 @@ final transactionTrackerProvider = Provider<TransactionTracker>((ref) {
   );
 });
 
+/// KyberSwap Base router — the allowance target for USDC sells AND the
+/// destination for the swap tx. In demo mode we never actually broadcast, but
+/// TransactionService still gates on these constants; keep them aligned with
+/// what the Worker returns so the mock code path stays consistent.
+const kyberSwapRouterBase = '0x6131B5fae19EA4f9D964eAc0408E4408b66337b5';
+
 final transactionServiceProvider = Provider<TransactionService>((ref) {
   return TransactionService(
     wallet: ref.watch(walletServiceProvider),
     chain: ref.watch(chainGatewayProvider),
-    allowedSpender: '0x0000000000000000000000000000000000000001',
-    allowedSettler: '0x0000000000000000000000000000000000000002',
+    allowedSpender: kyberSwapRouterBase,
+    allowedSettler: kyberSwapRouterBase,
   );
 });
 

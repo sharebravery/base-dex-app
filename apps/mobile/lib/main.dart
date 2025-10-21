@@ -5,10 +5,10 @@ import 'package:dex_app/features/auth/auth_providers.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-Future<void> main() async {
+void main() {
   WidgetsFlutterBinding.ensureInitialized();
   final config = AppConfig.fromEnvironment();
-  final overrides = await buildMockOverrides(config);
+  final overrides = buildMockOverrides(config);
   runApp(
     ProviderScope(
       overrides: overrides,

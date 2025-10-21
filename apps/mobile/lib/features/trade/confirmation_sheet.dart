@@ -24,6 +24,10 @@ class ConfirmationSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final quoteFresh = quote.isFreshAt(DateTime.now());
+    // Route-preview only (KyberSwap `/routes` without follow-up `/route/build`)
+    // — no calldata means we can't broadcast. Surface that plainly so no one
+    // reads the destination row as "your funds go here".
+    final demoOnly = quote.transactionData == null;
 
     return SafeArea(
       child: Padding(
@@ -32,16 +36,20 @@ class ConfirmationSheet extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            if (demoOnly) ...[
+              _DemoBanner(text: l10n.demoNotBroadcast),
+              const SizedBox(height: 12),
+            ],
             _row(l10n.pay, '${quote.sellAmount}'),
             _row(l10n.receive, '${quote.buyAmount}'),
             _row(l10n.minimumReceived, '${quote.minBuyAmount}'),
             _row(l10n.networkFee, '${quote.networkFee}'),
             _row(l10n.slippage, '${_slippageBps(quote)} bps'),
-            _row(l10n.route, quote.routeLabels.join(' > ')),
+            _row(l10n.route, quote.routeLabels.join(' · ')),
             if (quote.allowanceTarget != null)
-              _row(l10n.spender, quote.allowanceTarget!),
+              _row(l10n.spender, _shortAddress(quote.allowanceTarget!)),
             _row(l10n.chain, l10n.baseChain),
-            _row(l10n.destination, quote.transactionTo),
+            _row(l10n.destination, _shortAddress(quote.transactionTo)),
             if (_needsApproval) ...[
               const SizedBox(height: 12),
               _row(l10n.approveToken(sellToken.symbol), '${quote.sellAmount}'),
@@ -49,12 +57,17 @@ class ConfirmationSheet extends StatelessWidget {
             const SizedBox(height: 16),
             FilledButton(
               onPressed: quoteFresh ? onConfirm : null,
-              child: Text(l10n.confirm),
+              child: Text(demoOnly ? l10n.confirmDemo : l10n.confirm),
             ),
           ],
         ),
       ),
     );
+  }
+
+  static String _shortAddress(String value) {
+    if (!value.startsWith('0x') || value.length < 12) return value;
+    return '${value.substring(0, 6)}…${value.substring(value.length - 4)}';
   }
 
   int _slippageBps(SwapQuote q) {
@@ -75,6 +88,40 @@ class ConfirmationSheet extends StatelessWidget {
             child: Text(
               value,
               textAlign: TextAlign.right,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _DemoBanner extends StatelessWidget {
+  const _DemoBanner({required this.text});
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      decoration: BoxDecoration(
+        color: scheme.tertiaryContainer.withValues(alpha: 0.5),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(
+          color: scheme.tertiary.withValues(alpha: 0.4),
+        ),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.info_outline, size: 18, color: scheme.tertiary),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              text,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: scheme.onTertiaryContainer,
+                  ),
             ),
           ),
         ],

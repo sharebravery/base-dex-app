@@ -283,7 +283,7 @@ as Duration,
 /// @nodoc
 mixin _$SwapQuote {
 
- BigInt get sellAmount; BigInt get buyAmount; BigInt get minBuyAmount; BigInt get networkFee; String? get allowanceTarget; String get transactionTo; String get transactionData; BigInt get transactionValue; BigInt get gas; BigInt get gasPrice; List<String> get routeLabels; DateTime get fetchedAt; Duration get validFor;
+ BigInt get sellAmount; BigInt get buyAmount; BigInt get minBuyAmount; BigInt get networkFee; String? get allowanceTarget; String get transactionTo; String? get transactionData; BigInt get transactionValue; BigInt get gas; BigInt get gasPrice; List<String> get routeLabels; DateTime get fetchedAt; Duration get validFor;
 /// Create a copy of SwapQuote
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -314,7 +314,7 @@ abstract mixin class $SwapQuoteCopyWith<$Res>  {
   factory $SwapQuoteCopyWith(SwapQuote value, $Res Function(SwapQuote) _then) = _$SwapQuoteCopyWithImpl;
 @useResult
 $Res call({
- BigInt sellAmount, BigInt buyAmount, BigInt minBuyAmount, BigInt networkFee, String? allowanceTarget, String transactionTo, String transactionData, BigInt transactionValue, BigInt gas, BigInt gasPrice, List<String> routeLabels, DateTime fetchedAt, Duration validFor
+ BigInt sellAmount, BigInt buyAmount, BigInt minBuyAmount, BigInt networkFee, String? allowanceTarget, String transactionTo, String? transactionData, BigInt transactionValue, BigInt gas, BigInt gasPrice, List<String> routeLabels, DateTime fetchedAt, Duration validFor
 });
 
 
@@ -331,7 +331,7 @@ class _$SwapQuoteCopyWithImpl<$Res>
 
 /// Create a copy of SwapQuote
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? sellAmount = null,Object? buyAmount = null,Object? minBuyAmount = null,Object? networkFee = null,Object? allowanceTarget = freezed,Object? transactionTo = null,Object? transactionData = null,Object? transactionValue = null,Object? gas = null,Object? gasPrice = null,Object? routeLabels = null,Object? fetchedAt = null,Object? validFor = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? sellAmount = null,Object? buyAmount = null,Object? minBuyAmount = null,Object? networkFee = null,Object? allowanceTarget = freezed,Object? transactionTo = null,Object? transactionData = freezed,Object? transactionValue = null,Object? gas = null,Object? gasPrice = null,Object? routeLabels = null,Object? fetchedAt = null,Object? validFor = null,}) {
   return _then(_self.copyWith(
 sellAmount: null == sellAmount ? _self.sellAmount : sellAmount // ignore: cast_nullable_to_non_nullable
 as BigInt,buyAmount: null == buyAmount ? _self.buyAmount : buyAmount // ignore: cast_nullable_to_non_nullable
@@ -339,8 +339,8 @@ as BigInt,minBuyAmount: null == minBuyAmount ? _self.minBuyAmount : minBuyAmount
 as BigInt,networkFee: null == networkFee ? _self.networkFee : networkFee // ignore: cast_nullable_to_non_nullable
 as BigInt,allowanceTarget: freezed == allowanceTarget ? _self.allowanceTarget : allowanceTarget // ignore: cast_nullable_to_non_nullable
 as String?,transactionTo: null == transactionTo ? _self.transactionTo : transactionTo // ignore: cast_nullable_to_non_nullable
-as String,transactionData: null == transactionData ? _self.transactionData : transactionData // ignore: cast_nullable_to_non_nullable
-as String,transactionValue: null == transactionValue ? _self.transactionValue : transactionValue // ignore: cast_nullable_to_non_nullable
+as String,transactionData: freezed == transactionData ? _self.transactionData : transactionData // ignore: cast_nullable_to_non_nullable
+as String?,transactionValue: null == transactionValue ? _self.transactionValue : transactionValue // ignore: cast_nullable_to_non_nullable
 as BigInt,gas: null == gas ? _self.gas : gas // ignore: cast_nullable_to_non_nullable
 as BigInt,gasPrice: null == gasPrice ? _self.gasPrice : gasPrice // ignore: cast_nullable_to_non_nullable
 as BigInt,routeLabels: null == routeLabels ? _self.routeLabels : routeLabels // ignore: cast_nullable_to_non_nullable
@@ -431,7 +431,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( BigInt sellAmount,  BigInt buyAmount,  BigInt minBuyAmount,  BigInt networkFee,  String? allowanceTarget,  String transactionTo,  String transactionData,  BigInt transactionValue,  BigInt gas,  BigInt gasPrice,  List<String> routeLabels,  DateTime fetchedAt,  Duration validFor)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( BigInt sellAmount,  BigInt buyAmount,  BigInt minBuyAmount,  BigInt networkFee,  String? allowanceTarget,  String transactionTo,  String? transactionData,  BigInt transactionValue,  BigInt gas,  BigInt gasPrice,  List<String> routeLabels,  DateTime fetchedAt,  Duration validFor)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _SwapQuote() when $default != null:
 return $default(_that.sellAmount,_that.buyAmount,_that.minBuyAmount,_that.networkFee,_that.allowanceTarget,_that.transactionTo,_that.transactionData,_that.transactionValue,_that.gas,_that.gasPrice,_that.routeLabels,_that.fetchedAt,_that.validFor);case _:
@@ -452,7 +452,7 @@ return $default(_that.sellAmount,_that.buyAmount,_that.minBuyAmount,_that.networ
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( BigInt sellAmount,  BigInt buyAmount,  BigInt minBuyAmount,  BigInt networkFee,  String? allowanceTarget,  String transactionTo,  String transactionData,  BigInt transactionValue,  BigInt gas,  BigInt gasPrice,  List<String> routeLabels,  DateTime fetchedAt,  Duration validFor)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( BigInt sellAmount,  BigInt buyAmount,  BigInt minBuyAmount,  BigInt networkFee,  String? allowanceTarget,  String transactionTo,  String? transactionData,  BigInt transactionValue,  BigInt gas,  BigInt gasPrice,  List<String> routeLabels,  DateTime fetchedAt,  Duration validFor)  $default,) {final _that = this;
 switch (_that) {
 case _SwapQuote():
 return $default(_that.sellAmount,_that.buyAmount,_that.minBuyAmount,_that.networkFee,_that.allowanceTarget,_that.transactionTo,_that.transactionData,_that.transactionValue,_that.gas,_that.gasPrice,_that.routeLabels,_that.fetchedAt,_that.validFor);case _:
@@ -472,7 +472,7 @@ return $default(_that.sellAmount,_that.buyAmount,_that.minBuyAmount,_that.networ
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( BigInt sellAmount,  BigInt buyAmount,  BigInt minBuyAmount,  BigInt networkFee,  String? allowanceTarget,  String transactionTo,  String transactionData,  BigInt transactionValue,  BigInt gas,  BigInt gasPrice,  List<String> routeLabels,  DateTime fetchedAt,  Duration validFor)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( BigInt sellAmount,  BigInt buyAmount,  BigInt minBuyAmount,  BigInt networkFee,  String? allowanceTarget,  String transactionTo,  String? transactionData,  BigInt transactionValue,  BigInt gas,  BigInt gasPrice,  List<String> routeLabels,  DateTime fetchedAt,  Duration validFor)?  $default,) {final _that = this;
 switch (_that) {
 case _SwapQuote() when $default != null:
 return $default(_that.sellAmount,_that.buyAmount,_that.minBuyAmount,_that.networkFee,_that.allowanceTarget,_that.transactionTo,_that.transactionData,_that.transactionValue,_that.gas,_that.gasPrice,_that.routeLabels,_that.fetchedAt,_that.validFor);case _:
@@ -496,7 +496,7 @@ class _SwapQuote extends SwapQuote {
 @override final  BigInt networkFee;
 @override final  String? allowanceTarget;
 @override final  String transactionTo;
-@override final  String transactionData;
+@override final  String? transactionData;
 @override final  BigInt transactionValue;
 @override final  BigInt gas;
 @override final  BigInt gasPrice;
@@ -540,7 +540,7 @@ abstract mixin class _$SwapQuoteCopyWith<$Res> implements $SwapQuoteCopyWith<$Re
   factory _$SwapQuoteCopyWith(_SwapQuote value, $Res Function(_SwapQuote) _then) = __$SwapQuoteCopyWithImpl;
 @override @useResult
 $Res call({
- BigInt sellAmount, BigInt buyAmount, BigInt minBuyAmount, BigInt networkFee, String? allowanceTarget, String transactionTo, String transactionData, BigInt transactionValue, BigInt gas, BigInt gasPrice, List<String> routeLabels, DateTime fetchedAt, Duration validFor
+ BigInt sellAmount, BigInt buyAmount, BigInt minBuyAmount, BigInt networkFee, String? allowanceTarget, String transactionTo, String? transactionData, BigInt transactionValue, BigInt gas, BigInt gasPrice, List<String> routeLabels, DateTime fetchedAt, Duration validFor
 });
 
 
@@ -557,7 +557,7 @@ class __$SwapQuoteCopyWithImpl<$Res>
 
 /// Create a copy of SwapQuote
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? sellAmount = null,Object? buyAmount = null,Object? minBuyAmount = null,Object? networkFee = null,Object? allowanceTarget = freezed,Object? transactionTo = null,Object? transactionData = null,Object? transactionValue = null,Object? gas = null,Object? gasPrice = null,Object? routeLabels = null,Object? fetchedAt = null,Object? validFor = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? sellAmount = null,Object? buyAmount = null,Object? minBuyAmount = null,Object? networkFee = null,Object? allowanceTarget = freezed,Object? transactionTo = null,Object? transactionData = freezed,Object? transactionValue = null,Object? gas = null,Object? gasPrice = null,Object? routeLabels = null,Object? fetchedAt = null,Object? validFor = null,}) {
   return _then(_SwapQuote(
 sellAmount: null == sellAmount ? _self.sellAmount : sellAmount // ignore: cast_nullable_to_non_nullable
 as BigInt,buyAmount: null == buyAmount ? _self.buyAmount : buyAmount // ignore: cast_nullable_to_non_nullable
@@ -565,8 +565,8 @@ as BigInt,minBuyAmount: null == minBuyAmount ? _self.minBuyAmount : minBuyAmount
 as BigInt,networkFee: null == networkFee ? _self.networkFee : networkFee // ignore: cast_nullable_to_non_nullable
 as BigInt,allowanceTarget: freezed == allowanceTarget ? _self.allowanceTarget : allowanceTarget // ignore: cast_nullable_to_non_nullable
 as String?,transactionTo: null == transactionTo ? _self.transactionTo : transactionTo // ignore: cast_nullable_to_non_nullable
-as String,transactionData: null == transactionData ? _self.transactionData : transactionData // ignore: cast_nullable_to_non_nullable
-as String,transactionValue: null == transactionValue ? _self.transactionValue : transactionValue // ignore: cast_nullable_to_non_nullable
+as String,transactionData: freezed == transactionData ? _self.transactionData : transactionData // ignore: cast_nullable_to_non_nullable
+as String?,transactionValue: null == transactionValue ? _self.transactionValue : transactionValue // ignore: cast_nullable_to_non_nullable
 as BigInt,gas: null == gas ? _self.gas : gas // ignore: cast_nullable_to_non_nullable
 as BigInt,gasPrice: null == gasPrice ? _self.gasPrice : gasPrice // ignore: cast_nullable_to_non_nullable
 as BigInt,routeLabels: null == routeLabels ? _self._routeLabels : routeLabels // ignore: cast_nullable_to_non_nullable

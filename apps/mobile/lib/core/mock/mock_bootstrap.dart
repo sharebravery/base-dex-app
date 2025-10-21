@@ -6,7 +6,6 @@ import 'package:dex_app/core/web3/evm_rpc.dart';
 import 'package:dex_app/features/auth/auth_models.dart';
 import 'package:dex_app/features/auth/auth_providers.dart';
 import 'package:dex_app/features/auth/wallet_service.dart';
-import 'package:dex_app/features/market/market_repository.dart';
 import 'package:dex_app/features/portfolio/portfolio_providers.dart';
 import 'package:dex_app/features/portfolio/portfolio_repository.dart';
 import 'package:dex_app/features/settings/settings_models.dart';
@@ -94,9 +93,10 @@ final class MockSwapRepository implements SwapRepository {
       buyAmount: price.buyAmount,
       minBuyAmount: (price.buyAmount * BigInt.from(995)) ~/ BigInt.from(1000),
       networkFee: price.networkFee,
-      allowanceTarget: '0x0000000000000000000000000000000000000001',
-      transactionTo: '0x0000000000000000000000000000000000000002',
-      transactionData: '0xdemo',
+      allowanceTarget: '0x6131B5fae19EA4f9D964eAc0408E4408b66337b5',
+      transactionTo: '0x6131B5fae19EA4f9D964eAc0408E4408b66337b5',
+      // Demo aggregator never returns calldata — it's route-preview only.
+      transactionData: null,
       transactionValue: BigInt.zero,
       gas: BigInt.from(220000),
       gasPrice: BigInt.from(1000000),
@@ -163,31 +163,25 @@ final class DemoSettingsRepository implements SettingsRepository {
 }
 
 /// Provides all overrides needed for a fully-usable demo:
-/// - REAL: market data via Worker→Binance, portfolio balances via Base RPC
-/// - MOCK: wallet signing, biometric, chain broadcast (to avoid gas costs)
-Future<List<Override>> buildMockOverrides(AppConfig config) async {
+/// - REAL: market data (Binance via Worker), portfolio balances (Base RPC),
+///   Swap price/quote (KyberSwap via Worker).
+/// - MOCK: wallet signing, biometric, chain broadcast — Confirm never touches
+///   the chain and the mobile client renders a "Demo — not broadcast" chip.
+///
+/// The `MockSwapRepository` remains available as a fallback / for tests but is
+/// no longer wired at bootstrap: the app now shows real routes and quotes.
+List<Override> buildMockOverrides(AppConfig config) {
   final prefs = SharedPreferencesAsync();
   final store = PendingTransactionStore(prefs);
   final rpc = Web3EvmRpc(config.baseRpcUrl);
   final apiDio = createApiClient(config.apiBaseUrl);
-  final marketRepo = ApiMarketRepository(apiDio);
-
-  // Pre-fetch ETH price for the mock swap repository. Falls back to a static
-  // sane number if the Worker is offline.
-  Decimal ethPrice = Decimal.parse('3300');
-  try {
-    final assets = await marketRepo.getAssets();
-    final eth = assets.firstWhere((a) => a.baseSymbol == 'ETH');
-    ethPrice = eth.priceUsd;
-  } catch (_) {}
-
-  final mockSwap = MockSwapRepository(ethPrice);
+  final apiSwap = ApiSwapRepository(apiDio);
 
   return [
     walletServiceProvider.overrideWithValue(DemoWalletService()),
     portfolioRepositoryProvider.overrideWithValue(RpcPortfolioRepository(rpc)),
-    ethPriceUsdProvider.overrideWithValue(ethPrice),
-    swapRepositoryProvider.overrideWithValue(mockSwap),
+    ethPriceUsdProvider.overrideWithValue(Decimal.parse('3300')),
+    swapRepositoryProvider.overrideWithValue(apiSwap),
     biometricGateProvider.overrideWithValue(DemoBiometricGate()),
     chainGatewayProvider.overrideWithValue(DemoChainGateway()),
     pendingTransactionStoreProvider.overrideWithValue(store),

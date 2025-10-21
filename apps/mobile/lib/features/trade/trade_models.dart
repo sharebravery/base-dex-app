@@ -38,7 +38,11 @@ abstract class SwapQuote with _$SwapQuote {
     required BigInt networkFee,
     required String? allowanceTarget,
     required String transactionTo,
-    required String transactionData,
+    // Null when the aggregator only returns a route preview (KyberSwap
+    // `/routes` without follow-up `/route/build`). In demo mode we never sign
+    // on-chain, so the mobile client leaves this null and renders a
+    // "Demo — not broadcast" chip on the confirmation sheet.
+    required String? transactionData,
     required BigInt transactionValue,
     required BigInt gas,
     required BigInt gasPrice,

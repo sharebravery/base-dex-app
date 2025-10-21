@@ -86,6 +86,28 @@ final class TradeController extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Set the slippage tolerance in basis points (50 = 0.5%). Invalidates the
+  /// current quote — the surrounding UI should re-run `review()` to fetch a
+  /// quote with the new tolerance.
+  void setSlippageBps(int bps) {
+    if (bps == state.slippageBps) return;
+    final request = state.request;
+    state = state.copyWith(
+      slippageBps: bps,
+      request: request == null
+          ? null
+          : SwapRequest(
+              sellToken: request.sellToken,
+              buyToken: request.buyToken,
+              sellAmount: request.sellAmount,
+              taker: request.taker,
+              slippageBps: bps,
+            ),
+      quote: null,
+    );
+    notifyListeners();
+  }
+
   @override
   void dispose() {
     _debounce?.cancel();

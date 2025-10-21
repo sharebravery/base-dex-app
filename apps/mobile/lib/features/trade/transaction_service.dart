@@ -92,14 +92,22 @@ final class TransactionService {
     if (quote.transactionTo.toLowerCase() != allowedSettler.toLowerCase()) {
       throw StateError('Unexpected Swap destination');
     }
+    // Quote came from a route-preview endpoint (KyberSwap `/routes`) without
+    // the follow-up `/route/build`. There is no calldata to sign; callers in
+    // demo mode should stop before reaching this point.
+    final calldata = quote.transactionData;
+    if (calldata == null) {
+      throw StateError('Quote has no transactionData; cannot broadcast');
+    }
     final request = EvmTransactionRequest(
       to: quote.transactionTo,
-      data: quote.transactionData,
+      data: calldata,
       value: quote.transactionValue,
       gasLimit: quote.gas,
-      // TODO(phase-4): quote.gasPrice is 0x's legacy gasPrice hint; using it as
-      // EIP-1559 maxFeePerGas with zero priority underprices on a rising basefee.
-      // Add a safety multiplier and non-zero priority fee before mainnet wiring.
+      // TODO(phase-4): quote.gasPrice is a legacy hint from KyberSwap; using it
+      // as EIP-1559 maxFeePerGas with zero priority underprices on a rising
+      // basefee. Add a safety multiplier and non-zero priority fee before real
+      // mainnet wiring.
       maxFeePerGas: quote.gasPrice,
       maxPriorityFeePerGas: BigInt.zero,
       nonce: await chain.nonce(owner),
