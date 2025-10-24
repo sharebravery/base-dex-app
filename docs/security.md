@@ -24,7 +24,7 @@ readiness.
 - `LocalAuthBiometricGate` uses `biometricOnly: false` and
   `persistAcrossBackgrounding: true`. This means device passcode is an
   accepted fallback: on an unlocked device without a strong biometric, a
-  passcode is sufficient to confirm a swap. This is intentional for demo but
+  passcode is sufficient to confirm a swap. This is intentional for the preview flow but
   a hardened build should flip `biometricOnly: true`.
 - The Flutter `local_auth` plugin platform channel is not currently exercised
   in automated tests; a device-attached run is required to prove the prompt
@@ -57,7 +57,7 @@ readiness.
 - Both allowlisted addresses come from build-time constants pointing at the
   KyberSwap Base router (`0x6131B5fae19EA4f9D964eAc0408E4408b66337b5`) and are
   held constant across a session; they are NOT taken from the quote payload.
-- The demo path never reaches these guards — the route-preview quote carries
+- The preview path never reaches these guards — the route-preview quote carries
   `transactionData: null` and `TradeExecutor` short-circuits before signing.
   The checks stay in place to prevent regressions if the `/route/build`
   broadcast path is ever wired.
@@ -71,7 +71,7 @@ readiness.
 
 ## Receipt / log verification
 
-- After a swap is broadcast (not exercised in demo mode), the mobile client
+- After a swap is broadcast (not exercised in the preview flow), the mobile client
   posts `{ txHash }` to `/v1/trades/verify`. The Worker fetches the receipt +
   transaction via `eth_getTransactionReceipt` / `eth_getTransactionByHash`
   and asserts:
@@ -120,7 +120,7 @@ readiness.
 
 ## Manual verification checklist (operator-run)
 
-Before promoting a build past demo mode:
+Before promoting a build to on-chain settlement:
 
 1. Confirm `env.ALLOWED_SETTLER` matches the current KyberSwap Base router
    (`0x6131B5fae19EA4f9D964eAc0408E4408b66337b5`) — cross-check on BaseScan.

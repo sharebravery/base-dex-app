@@ -1,8 +1,8 @@
-# DEX Demo
+# Base DEX
 
-一个只读的去中心化交易所前端 demo，Flutter mobile + Cloudflare Workers。
+一个 Base 链去中心化交易所前端，Flutter mobile + Cloudflare Workers。
 
-我原本只想练一下 Flutter web3 相关的写法，做着做着就把 UI 铺满了 —— 现在看起来像那么回事。**所有数字都是实时的**，但确认按钮不签名、不广播，任何人拿到都不会误操作真钱包。
+行情、K 线、资产余额、兑换报价全部实时拉取自链上与交易所，UI 按 4 个 Tab 组织：Market / Trade / Portfolio / Settings。
 
 ## 截图
 
@@ -25,9 +25,8 @@
 | Portfolio 余额 | ETH + USDC on Base | `mainnet.base.org` |
 | Trade 报价 / route / gas | 汇率、min received、路由 | KyberSwap `/routes` |
 
-- Confirm 按钮短路成 `Demo · not broadcast`，不签名。
-- KyberSwap 只调 `/routes`（route-preview），不调 `/route/build`（不产 calldata）。
-- Portfolio 的 24h 变化 pill 和 P&L 迷你线是按持仓 USD 权重合成上面这些真数据得到的。
+- 行情与资产数据走 Worker 代理，带分层缓存与 CORS。
+- Portfolio 的 24h 变化 pill 和 P&L 迷你线按持仓 USD 权重合成自实时行情。
 
 ## 页面亮点
 
@@ -58,7 +57,7 @@
 - 中间圆形 flip 按钮
 - 滑点 chip（0.1 / 0.5 / 1 / 3 % + 自定义）
 - 完整报价详情：Rate / Min Received / Price Impact / Gas / Network Fee
-- **路由可视化**：sell → hop pill → buy 横向节点图
+- **路由可视化**：sell -> hop pill -> buy 横向节点图
 - 报价倒计时进度条 + 秒数
 
 **Settings**
@@ -103,7 +102,7 @@ Client 通过 `API_BASE_URL`（build-time）指向 worker。默认 `http://127.0
 | `ALLOWED_SETTLER` | 允许签名的 router 地址 | KyberSwap Base router |
 | `CORS_ORIGINS` | 浏览器 origin 白名单，支持 `*.x.y` | 空 |
 | `APP_ENV` | `mock` / `staging` / `production` | `mock` |
-| `JWT_SECRET`, `SIWE_DOMAIN`, `SIWE_URI` | SIWE session，只有启用 `/v1/trades*` 才需要 | demo 里不用 |
+| `JWT_SECRET`, `SIWE_DOMAIN`, `SIWE_URI` | SIWE session，启用 `/v1/trades*` 时需要 | 空 |
 
 ## 测试
 
@@ -137,7 +136,7 @@ apps/
   mobile/
     lib/
       app/          # router, shell
-      core/         # web3 rpc, api client, mock bootstrap, widgets
+      core/         # web3 rpc, api client, bootstrap, widgets
       features/
         market/     # market screen, pair detail, sparkline/candle
         trade/      # swap form, quote details, route viz
@@ -149,6 +148,6 @@ apps/
     test/
 ```
 
-## 说明
+## 路线图
 
-Demo 目的是把整个前端流跑通、把 UI 铺满 —— 不涉及真实钱包连接、签名、上链。要变成真能交易的东西还差几件事：接钱包（WalletConnect v2 或本地私钥）、KyberSwap `/route/build` 拿 calldata、`eth_sendRawTransaction` 广播、tx 状态轮询。当前所有能读取的链上/交易所数据都是真的。
+当前覆盖完整的前端流：行情、K 线、资产、聚合报价、路由可视化。链上结算相关能力（钱包连接、`/route/build` 取 calldata、`eth_sendRawTransaction` 广播、交易状态轮询）为后续阶段。

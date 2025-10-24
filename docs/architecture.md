@@ -105,24 +105,24 @@ The mobile client never calls these providers directly — everything goes
 through the Worker so we can layer caching (`Cache-Control` on Binance
 proxies) and CORS on top.
 
-## Demo-mode boundary
+## Settlement boundary
 
-The route-preview swap intentionally does NOT hit KyberSwap's
-`/route/build`. That endpoint returns encoded calldata plus a `sender` /
-`recipient` binding; without it we can't produce a signable transaction. The
-mobile client treats a `null` `transactionData` on the quote as an explicit
-signal for "route-preview only" and:
+The swap flow currently uses KyberSwap's `/routes` route-preview. That endpoint
+returns `amountOut`, `gas`, `l1FeeUsd`, `route[]`, and the router address -
+everything the quote UI needs. Producing a signable transaction additionally
+requires `/route/build` for encoded calldata; the client treats a `null`
+`transactionData` on the quote as the signal that only a preview is available
+and:
 
-1. Renders a "Demo · quotes are real, nothing is broadcast" banner on the
-   Trade screen and a chip on the Confirmation Sheet.
-2. Short-circuits `_confirm` to a SnackBar instead of dispatching
+1. Surfaces the route / quote details on the Trade screen and Confirmation Sheet.
+2. Completes the confirm flow client-side without dispatching
    `TradeExecutor.execute`.
 3. Displays the router address as the destination row, formatted as
-   `0x6131…37b5` (short address), so viewers can copy it onto BaseScan.
+   `0x6131…37b5` (short address), so it can be copied onto BaseScan.
 
-Real signing / broadcast would only re-enter through the `TradeExecutor` code
-path once a build-flag flips (`APP_ENV == 'production'`) AND the Worker adds
-a `/route/build` step. Both are out of scope for this branch.
+On-chain signing / broadcast re-enters through the `TradeExecutor` path once a
+build-flag flips (`APP_ENV == 'production'`) AND the Worker adds a
+`/route/build` step.
 
 ## SIWE sequence
 
@@ -209,8 +209,8 @@ the same store state after each poll completes.
 - Live Supabase/Postgres connection is not exercised in tests; Drizzle client
   factory expects Hyperdrive bindings.
 - KyberSwap `/route/build` (which returns encoded calldata + `sender`
-  binding). Without it the demo shows the route/quote but cannot sign a
-  transaction — see "Demo-mode boundary" above.
+  binding). Without it the client shows the route/quote but cannot sign a
+  transaction — see "Settlement boundary" above.
 - Native biometric plugin wiring (`local_auth`) — `LocalAuthBiometricGate` is
   implemented; the plugin platform channel is not exercised in tests.
 - End-to-end integration tests via the `integration_test` package (deferred to

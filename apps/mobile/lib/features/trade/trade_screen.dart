@@ -56,12 +56,11 @@ class TradeScreen extends HookWidget {
             title: Text(
               '${BaseTokens.usdc.symbol} → ${BaseTokens.eth.symbol}',
             ),
-            actions: const [_DemoBadge()],
           ),
           body: SafeArea(
             child: LayoutBuilder(
               builder: (context, constraints) {
-                final banner = _DemoBanner();
+                final banner = _InfoBanner();
                 final form = _Form(
                   controller: controller,
                   state: controller.state,
@@ -105,46 +104,31 @@ class TradeScreen extends HookWidget {
   }
 }
 
-class _DemoBadge extends StatelessWidget {
-  const _DemoBadge();
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(right: 12),
-      child: Chip(
-        visualDensity: VisualDensity.compact,
-        label: Text(context.l10n.demoBadge),
-        padding: EdgeInsets.zero,
-      ),
-    );
-  }
-}
-
-class _DemoBanner extends StatelessWidget {
+class _InfoBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: BoxDecoration(
-        color: AppColors.warning.withValues(alpha: 0.14),
+        color: AppColors.accent.withValues(alpha: 0.10),
         borderRadius: BorderRadius.circular(10),
         border: Border.all(
-          color: AppColors.warning.withValues(alpha: 0.35),
+          color: AppColors.accent.withValues(alpha: 0.30),
         ),
       ),
       child: Row(
         children: [
           const Icon(
-            Icons.info_outline,
+            Icons.bolt_outlined,
             size: 16,
-            color: AppColors.warning,
+            color: AppColors.accent,
           ),
           const SizedBox(width: 8),
           Expanded(
             child: Text(
               context.l10n.demoTradeBanner,
               style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                    color: AppColors.warning,
+                    color: AppColors.accent,
                   ),
             ),
           ),
