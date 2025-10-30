@@ -91,7 +91,7 @@ class _HoverLiftState extends State<_HoverLift> {
         duration: const Duration(milliseconds: 160),
         curve: Curves.easeOut,
         transform: _hover
-            ? (Matrix4.identity()..translate(0.0, -2.0))
+            ? Matrix4.translationValues(0.0, -2.0, 0.0)
             : Matrix4.identity(),
         child: widget.child,
       ),

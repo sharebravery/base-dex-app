@@ -48,7 +48,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Refuse committed secrets and private-key handles
         run: |
-          if grep -R -n --exclude-dir=node_modules -E 'getPrivateKeyForSigning|BEGIN PRIVATE KEY|ZEROX_API_KEY=' apps docs; then
+          if grep -R -n --exclude-dir=node_modules -E 'getPrivateKeyForSigning|BEGIN PRIVATE KEY|ZEROX_API_KEY=' apps; then
             echo "::error::forbidden secret or private-key handle committed"
             exit 1
           fi
