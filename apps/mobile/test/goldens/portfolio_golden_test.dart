@@ -1,3 +1,6 @@
+@Tags(['golden'])
+library;
+
 import 'package:decimal/decimal.dart';
 import 'package:dex_app/features/portfolio/portfolio_models.dart';
 import 'package:dex_app/features/portfolio/portfolio_screen.dart';

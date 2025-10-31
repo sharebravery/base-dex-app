@@ -1,3 +1,6 @@
+@Tags(['golden'])
+library;
+
 import 'package:dex_app/features/portfolio/deposit_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';

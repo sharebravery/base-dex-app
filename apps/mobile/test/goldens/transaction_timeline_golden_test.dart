@@ -1,3 +1,6 @@
+@Tags(['golden'])
+library;
+
 import 'package:dex_app/features/trade/trade_executor.dart';
 import 'package:dex_app/features/trade/transaction_timeline.dart';
 import 'package:flutter/material.dart';

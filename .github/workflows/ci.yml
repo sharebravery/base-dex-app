@@ -20,7 +20,9 @@ jobs:
         run: git diff --exit-code -- 'apps/mobile/lib/l10n/*' 'apps/mobile/lib/**/*.g.dart' 'apps/mobile/lib/**/*.freezed.dart'
       - run: flutter analyze
         working-directory: apps/mobile
-      - run: flutter test --update-goldens=false
+      # Golden tests are platform-sensitive (font rendering differs between
+      # macOS local and Linux CI). Run them locally; CI runs the rest.
+      - run: flutter test --exclude-tags golden
         working-directory: apps/mobile
 
   api:

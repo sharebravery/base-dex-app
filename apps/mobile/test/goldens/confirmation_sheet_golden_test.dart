@@ -1,3 +1,6 @@
+@Tags(['golden'])
+library;
+
 import 'package:dex_app/core/web3/base_tokens.dart';
 import 'package:dex_app/features/trade/confirmation_sheet.dart';
 import 'package:dex_app/features/trade/trade_models.dart';
